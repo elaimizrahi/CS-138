@@ -1,89 +1,70 @@
-
  #include <stdio.h>
+ #include <stdbool.h>
  #include <assert.h>
- #include <stdlib.h>
 
- 
+ bool newSearch(int arr[], int len, int x){    
+    int BB = 0;
+    int BA = len-1;
+    int Pos = 0;    
+    printf("start with the range %d to %d\n", arr[BB], arr[BA]);
 
- int **split(int a[], int n, int p, int *len1, int *len2){
+    if(x < arr[0] || x > arr[len-1]){
+        printf("%d not in the range between %d and %d\n", x, arr[0], arr[BA]);
+        return false;
+    }
+    Pos = BB + ((double)(x - arr[BB])/(arr[BA] - arr[BB])) * ((BA) - BB);
 
-    int count1 = 0;
-    int count2 = 0;
+    int index = 0;
 
-    int **split = malloc(2 * sizeof(int));
-    assert(split);
-
-    
-
-    for(int i = 0; i < n; i++){
-        if(a[i] <= p){
-            count1++;
+    while(Pos < len){
+        printf("len%d", len);
+        printf("Pos: %d", Pos);
+        if(arr[Pos] == x){
+            printf("%d was found in position %d\n", x, Pos);
+            return true;
         }
-        if(a[i] > p){
-            count2++;
+        if(x > arr[Pos] && x < arr[Pos+1]){
+            printf("move to search in the range between %d and %d\n", arr[Pos+1], arr[BA]);
+            printf("%d not in the range between %d and %d\n", x, arr[0], arr[BA]);
+            return false;
         }
+        if(arr[Pos] > x){
+            BA  = Pos - 1;
+        }
+        if(arr[Pos] < x){
+            BB  = Pos + 1;
+        }            
+        Pos = (int)((BB + ((double)(x - arr[BB])/(arr[BA] - arr[BB])) * ((BA) - BB)));
+        printf("move to search in the range between %d and %d\n", arr[BB], arr[BA]);
+
     }
 
-    *len1 = count1;
-    *len2 = count2;
 
-    int *lower;
-    lower = malloc(count1 * sizeof(int));
-
-    int *greater;
-    greater = malloc(count2 * sizeof(int));
-
-    split[0] = lower;
-    split[1] = greater;
-
-    int lowercount = 0;
-    int greatercount = 0;
-
-    for(int i = 0; i < n; i++){
-        if(a[i] <= p){
-            lower[lowercount] = a[i];
-            lowercount++;
-        }
-        if(a[i] > p){
-            greater[greatercount] = a[i];
-            greatercount++;
-        }
-    }
-
-    return split;
+    return true;
  }
 
-
-/**/
  int main(void)
  {
-int a[] = {9,3,2,6,-1,3,6,6,7,8,5,2,3,4,1,0};
-int n = sizeof(a)/sizeof(a[0]);
- int n1,n2;
-int **ans = split(a,n,5,&n1, &n2);
- assert(n1==10);
- assert(n2==6);
- printf("First Array\n");
-for (int i=0; i<n1; i++){
-printf("%d\n",ans[0][i]);
- }
- printf("Second Array\n");
- for (int i=0; i<n2; i++){
- printf("%d\n",ans[1][i]);
- }
- free(ans[1]);
-free(ans[0]);
- free(ans);
-
- ans = split(a,n,-10,&n1, &n2);
- assert(n1==0);
- assert(n2==n);
- printf("First Array\n");
- for (int i=0; i<n1; i++){
-printf("%d\n",ans[0][i]);
- }
- printf("Second Array\n");
- for (int i=0; i<n2; i++){
- printf("%d\n",ans[1][i]);
- }
+ int a[1] = {14};
+ assert(!newSearch(a,1,10));
+ printf("\n\n");
+ assert(newSearch(a,1,14));
+ printf("\n\n");
+ int b[13] = {1,4,5,7,12,23,44,67,89,100,120,121,122};
+ assert(!newSearch(b,13,0));
+ printf("\n\n");
+ assert(!newSearch(b,13,150));
+ printf("\n\n");
+ assert(newSearch(b,13,4));
+ printf("\n\n");
+ assert(newSearch(b,13,121));
+ printf("\n\n");
+ assert(newSearch(b,13,23));
+ printf("\n\n");
+ int c[20] = {-10,-4,5,7,12,23,44,67,89,100,120,121,122,200,210,222,300,301,303,500};
+ assert(!newSearch(c,20,55));
+ printf("\n\n");
+ assert(newSearch(c,20,12));
+ printf("\n\n");
+ return 0;
  }
